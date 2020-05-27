@@ -547,7 +547,8 @@ pre.line-numbers > code {
 
 <h2 id="toc_3"> How does it work</h2>
 
-<p>Knowing now each module, one can easily figure out what we&#39;re actually doing:</p>
+<p><img src="architecture.png" alt="">
+Knowing now each module, one can easily figure out what we&#39;re actually doing:</p>
 
 <ul>
 <li><p>The server open \(n\) many sockets on \(n\) different ports. This can be configured inside <code>config.h</code>. The server will create a thread for every socket and start listening on that socket. Once a thread receives a message, the message will be handled by the <code>handle_request()</code> function defined inside of <code>server.c</code>. As mentioned earlier, this function now passes the contents to the ecommerce module, namely function <code>ecommerce_handle_request()</code>, to keep everything tidy and neat. </p></li>
@@ -566,9 +567,20 @@ pre.line-numbers > code {
 
 <p>We tested the server with up to 1&#39;000 connections. It worked pretty good! However, some messages were lost and we know the cause. The problem is, that we didn&#39;t take the segmentation of TCP packets into account. Thus this needs to be updated, and that&#39;s what we&#39;ll try to do until tomorrow for the presentation. Otherwise, every scenario works like a charm. See programs inside  the <code>scenario</code> folder. </p>
 
-<h2 id="toc_5">Conclusion</h2>
+<h2 id="toc_5">Additional features/Scenario 3</h2>
 
-<p>We are very happy with the results. By following the philosophy of trying to develop the modules independently, we got some nice byproducts one can use for other stuff. The <code>hash_table</code> for example will work on (we tried <code>int</code> and <code>char*</code>) any kind of types, since it&#39;s basically just <code>memcpy()</code> the given data. </p>
+<p>As mentioned in the requirements, we need to implement an additional feature or more complex architecture. We did both of them!</p>
+
+<ul>
+<li>The ecommerce is basically just an overlay on the server. One can easily just replace and rewrite the needed functions and handle the received data in any other way. This makes the server very versatile. </li>
+<li>The server state (database of key-value pairs) can be permanently stored</li>
+<li>The <code>hash_table</code> module is a complete hash table implementation which handles collisions with chaining. It&#39;s also very versatile, since one can store any kind of data type as a value.</li>
+<li>f</li>
+</ul>
+
+<h2 id="toc_6">Conclusion</h2>
+
+<p>We are very happy with the results. By following the philosophy of trying to develop the modules independently, we got some nice byproducts one can use for other stuff. The <code>hash_table</code> for example will work on (we tried <code>int</code> and <code>char*</code>) any kind of types, since it&#39;s basically just <code>memcpy()</code>ing the given data. Now, we just need to fix the segmentation problem and we&#39;re done.</p>
 
 
 

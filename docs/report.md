@@ -25,6 +25,7 @@ Finally, the e-commerce store implementation happens inside the `ecommerce` modu
 
 
 ## How does it work
+![](architecture.png)
 Knowing now each module, one can easily figure out what we're actually doing:
 
 - The server open $n$ many sockets on $n$ different ports. This can be configured inside `config.h`. The server will create a thread for every socket and start listening on that socket. Once a thread receives a message, the message will be handled by the `handle_request()` function defined inside of `server.c`. As mentioned earlier, this function now passes the contents to the ecommerce module, namely function `ecommerce_handle_request()`, to keep everything tidy and neat. 
@@ -41,6 +42,14 @@ This seperation of getting work and doing work on multiple threads allows (or th
 
 ## Stress Testing
 We tested the server with up to 1'000 connections. It worked pretty good! However, some messages were lost and we know the cause. The problem is, that we didn't take the segmentation of TCP packets into account. Thus this needs to be updated, and that's what we'll try to do until tomorrow for the presentation. Otherwise, every scenario works like a charm. See programs inside  the `scenario` folder. 
+
+## Additional features/Scenario 3
+As mentioned in the requirements, we need to implement an additional feature or more complex architecture. We did both of them!
+
+- The ecommerce is basically just an overlay on the server. One can easily just replace and rewrite the needed functions and handle the received data in any other way. This makes the server very versatile. 
+- The server state (database of key-value pairs) can be permanently stored
+- The `hash_table` module is a complete hash table implementation which handles collisions with chaining. It's also very versatile, since one can store any kind of data type as a value.
+
 
 ## Conclusion
 
