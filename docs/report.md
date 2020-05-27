@@ -44,13 +44,15 @@ This seperation of getting work and doing work on multiple threads allows (or th
 We tested the server with up to 1'000 connections. It worked pretty good! However, some messages were lost and we know the cause. The problem is, that we didn't take the segmentation of TCP packets into account. Thus this needs to be updated, and that's what we'll try to do until tomorrow for the presentation. Otherwise, every scenario works like a charm. See programs inside  the `scenario` folder. 
 
 ## Additional features/Scenario 3
-As mentioned in the requirements, we need to implement an additional feature or more complex architecture. We did both of them!
+As mentioned in the requirements, we need to implement an additional feature or more complex architecture. We did both!
 
 - The ecommerce is basically just an overlay on the server. One can easily just replace and rewrite the needed functions and handle the received data in any other way. This makes the server very versatile. 
 - The server state (database of key-value pairs) can be permanently stored
 - The `hash_table` module is a complete hash table implementation which handles collisions with chaining. It's also very versatile, since one can store any kind of data type as a value.
+- The `networking` module is a neat shortcut that can be indepdently used to open a standard TCP socket. 
+- Exstensive documentation and usage examples
 
 
 ## Conclusion
 
-We are very happy with the results. By following the philosophy of trying to develop the modules independently, we got some nice byproducts one can use for other stuff. The `hash_table` for example will work on (we tried `int` and `char*`) any kind of types, since it's basically just `memcpy()`ing the given data. Now, we just need to fix the segmentation problem and we're done.
+We are very happy with the results. By following the philosophy of trying to develop the modules independently, we got some nice byproducts one can use for other stuff. The `hash_table` for example will work on (we tried `int` and `char*`) any kind of types, since it's basically just `memcpy()`ing the given data. Now, we just need to fix the segmentation problem which appears if you have multiple hundreds of connections and we're good to go.

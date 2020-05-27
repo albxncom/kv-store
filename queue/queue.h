@@ -1,10 +1,3 @@
-/*
-* @Author: albin
-* @Date:   2020-05-08 12:56:21
-* @Last Modified by:   albin
-* @Last Modified time: 2020-05-10 05:54:10
-*/
-
 /**
  * queue
  *

@@ -50,7 +50,6 @@ struct connection {
 	char port[6];
 	int *connections_counter;
 	void (*handler)();
-	pthread_t thread;
 };
 
 #define DEBUG_NETWORKING 0

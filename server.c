@@ -150,7 +150,6 @@ void networking(struct connection *network) {
         sprintf((connections + i)->port, "%i", PORTS_START + i);
         (connections + i)->handler = handle_request;
         (connections + i)->connections_counter = &GLOBAL_connections_counter;
-        (connections + i)->thread = thr_connections_handler[i];
         // Run a thread
         pthread_create(&thr_connections_handler[i], NULL, connections_handler, &connections[i]);
     }

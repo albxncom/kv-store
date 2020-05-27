@@ -1,10 +1,3 @@
-/*
-* @Author: albin
-* @Date:   2020-05-25 02:55:44
-* @Last Modified by:   albin
-* @Last Modified time: 2020-05-25 03:49:22
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

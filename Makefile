@@ -1,7 +1,7 @@
-all : server random_kv_gen scenario1 scenario2 scenario3 clean_objs
+all : server random_kv_gen scenario1 scenario2 scenario3 scenario4 ./networking/basic_example ./hash_table/basic_example clean_objs
 
 clean:
-	rm server random_kv_gen scenarios/scenario1 scenarios/scenario2 scenarios/scenario3
+	rm server random_kv_gen scenarios/scenario1 scenarios/scenario2 scenarios/scenario3 scenarios/scenario4 ./networking/basic_example ./hash_table/basic_example
 
 clean_objs:
 	rm *.o */*.o
@@ -30,6 +30,10 @@ server.o : server.c ./sema/sema.h ./networking/networking.h ./ecommerce/ecommerc
 ./networking/networking.o : ./networking/networking.c ./networking/networking.h
 	gcc -c ./networking/networking.c -o ./networking/networking.o
 
+# basic example
+./networking/basic_example : ./networking/networking.o
+	gcc ./networking/basic_example.c -o ./networking/basic_example ./networking/networking.o
+
 # ecommerce module
 #-------------
 ./ecommerce/ecommerce.o : ./ecommerce/ecommerce.c ./ecommerce/ecommerce.h
@@ -40,6 +44,10 @@ server.o : server.c ./sema/sema.h ./networking/networking.h ./ecommerce/ecommerc
 #-------------
 ./hash_table/hash_table.o : ./hash_table/hash_table.c ./hash_table/hash_table.h
 	gcc -c ./hash_table/hash_table.c -o ./hash_table/hash_table.o
+
+# basic example
+./hash_table/basic_example : ./hash_table/hash_table.o
+	gcc ./hash_table/basic_example.c -o ./hash_table/basic_example ./hash_table/hash_table.o
 
 # miscs
 #----------
@@ -56,3 +64,5 @@ scenario2 : ./scenarios/scenario2.c
 	gcc ./scenarios/scenario2.c -o ./scenarios/scenario2
 scenario3 : ./scenarios/scenario3.c
 	gcc ./scenarios/scenario3.c -o ./scenarios/scenario3
+scenario4 : ./scenarios/scenario4.c
+	gcc ./scenarios/scenario4.c -o ./scenarios/scenario4

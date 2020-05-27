@@ -1,3 +1,9 @@
 shoes 100
-pants 50
+ties 100
+socks 40
 tshirts 30
+suits 45
+pants 50
+dress 5
+poloshirts 4
+jackets 30

@@ -6,8 +6,8 @@ Here we'll explain everything needed to get our server up and running and there'
 
 ## Modules
 - `queue`: A queue to store the jobs we receive.
-- `networking`: Opens a socket on a given port and can handle multiple clients on that socket.
-- `hash_table`: The hash table is used to store the (key,value) pairs.
+- `networking`: Opens a socket on a given port and can handle multiple clients on that socket. [[Documentation](./networking/README.md)]
+- `hash_table`: The hash table is used to store the (key,value) pairs. [[Documentation](./hash_table/README.md)]
 - `misc`: Contains a program to generate randomly (key,value) pairs and store them into a text file.
 - `ecommerce`: Is the overlay applied on the `server.c` file. Here we implement the functions asked by the `sever.c` file. 
 - `scenarios`: Here you can find the three scenarios that were being asked by the project requirements. 

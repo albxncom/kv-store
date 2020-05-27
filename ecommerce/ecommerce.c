@@ -1,10 +1,3 @@
-/*
-* @Author: albin
-* @Date:   2020-05-08 03:29:05
-* @Last Modified by:   albin
-* @Last Modified time: 2020-05-26 22:01:14
-*/
-
 #include "./ecommerce.h"
 
 queue *jobs;
@@ -14,6 +7,12 @@ sema mutex_ht;
 hash_table *db;
 int *connections_counter;
 
+/**
+ * This is the worker which works on the queue. Should be called in a thread.
+ * @param  _arg Here we're just using 1 argument, namely the pointer to the kill_server semaphore,
+ *              which we can use to kill the server. 
+ * @return      NULL
+ */
 void *ecommerce_worker(void *_arg) {
 
     if(DEBUG_ECOMMERCE) printf("debug: ecommerce: worker started\n");
@@ -277,12 +276,13 @@ void *ecommerce_worker(void *_arg) {
 }
 
 /**
- * Parse the received request (message). If it's valid syntax,
+ * Parse the received request (buffer). If it's valid syntax,
  * then add it to jobs queue.
- * @param data        [description]
- * @param data_length [description]
- * @param from        [description]
- * @param port        [description]
+ * @param data        The buffer of data received, max 256 bytes. 
+ * @param data_length The actual length of the data.
+ * @param from        From which socket the data was received, can be 
+ *                    used to send() back messages
+ * @param port        From which port the data was received.
  */
 void ecommerce_handle_request(char *data, int data_length, int from, char *port) {
 
@@ -291,10 +291,6 @@ void ecommerce_handle_request(char *data, int data_length, int from, char *port)
         *(data + data_length - 2) = '\0';
     }
 
-    // Parse message, whether in valid format
-    char *pattern = "^[A-Z]{3}([ ][0-9A-Za-z_-]{1,99})*$";
-    char to_add[256 + 21]; // 256 is buffer size and 21 is digit length int can take on a 64bit machine
-
     // data is a buffer we receive, thus let's split it
     char cp[257];
     char *line;
@@ -302,13 +298,15 @@ void ecommerce_handle_request(char *data, int data_length, int from, char *port)
 
     strcpy(cp, data); // strtok manipulates given input, thus make copy
 
+    // This is our "line"
     line = strtok(cp, del);
 
-
-
+    // To arse line, whether in valid format
+    char *pattern = "^[A-Z]{3}([ ][0-9A-Za-z_-]{1,99})*$";
+    char to_add[256 + 21]; // 256 is buffer size and 21 is digit length int can take on a 64bit machine
+    printf("%s\n", data);
     while(line != NULL){
         if(match(line, pattern)) {
-
             snprintf(to_add, 256 + 21, "%s %i", line, from);
 
             // Add jobs to queue
@@ -322,12 +320,19 @@ void ecommerce_handle_request(char *data, int data_length, int from, char *port)
         } else {
             if(DEBUG_ECOMMERCE) printf("debug: ecommerce: handler: not valid syntax, not enqueued from socket %i from port %s: %s\n", from, port, line);
         }
-
+        
+        memset(to_add, 0, sizeof(to_add));
         line = strtok(NULL, del);
     }
 
 }
 
+/**
+ * This is our initializer, which starts queue and the hash table.
+ * @param gl_kill_server         Pointer to global kill server semaphore.
+ * @param gl_connections_counter Pointer to integer of global variable for 
+ *                               counting the active connections.
+ */
 void ecommerce_initialize(sema *gl_kill_server, int *gl_connections_counter) {
 
     // Pass pointer to connections counter
@@ -356,7 +361,7 @@ void ecommerce_initialize(sema *gl_kill_server, int *gl_connections_counter) {
 
     // Init monitor
     pthread_t thr_ecommerce_monitor;
-    pthread_create(&thr_ecommerce_monitor, NULL, ecommerce_monitor, NULL);
+    //pthread_create(&thr_ecommerce_monitor, NULL, ecommerce_monitor, NULL);
 
     // Init ecommerce_worker
     pthread_t thr_ecommerce_worker;
@@ -380,17 +385,21 @@ void ecommerce_terminate() {
 }
 
 
+/**
+ * To not repeatedly write the same 2 lines, this is a shortcut 
+ * which sends back a "args count wrong message".
+ * @param client_id The socket id to send back the message.
+ */
 void msg_to_client_argc(int client_id) {
-    char *msg_to_send_back = "Item could not be updated. Args are not correct, please use: `UPD key:str amount:int`\n";
+    char *msg_to_send_back = "The arguments count is not right. Please look at the documentation for the commands.\n";
     send(client_id, msg_to_send_back, strlen(msg_to_send_back), 0);
 }
 
-void parser_get_command(char *str, char *cmd) {
-    memcpy(cmd, str, 3);
-    char t = '\0';
-    memcpy(cmd + 3, &t, 3);
-}
-
+/**
+ * This is used as a monitor to check job count and clients count.
+ * @param  _arg [description]
+ * @return      [description]
+ */
 void *ecommerce_monitor(void *_arg){
     while (1) {
         printf("\rJOBS: %i \t CLIENTS: %i", jobs->count, *connections_counter);
